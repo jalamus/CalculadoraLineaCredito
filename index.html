@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Crédito - 100% Banco</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #1e3a8a;
+        }
+
+        .form-section h2 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input, 
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+        }
+
+        .results-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #ff6b35;
+        }
+
+        .results-section h2 {
+            color: #ff6b35;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .summary-card h3 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .summary-card .amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .currency-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .currency-btn {
+            padding: 8px 16px;
+            border: 2px solid #ff6b35;
+            background: transparent;
+            color: #ff6b35;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .currency-btn.active {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .amortization-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .amortization-table th {
+            background: #1e3a8a;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .amortization-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .amortization-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .amortization-table {
+                font-size: 0.8rem;
+            }
+
+            .amortization-table th,
+            .amortization-table td {
+                padding: 8px 4px;
+            }
+        }
+
+        .info-rates {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-rates h4 {
+            color: #1565c0;
+            margin-bottom: 8px;
+        }
+
+        .info-rates ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-rates li {
+            color: #1565c0;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Calculadora de Crédito</h1>
+            <p>100% Banco Universal - Microcréditos y Comerciales</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2>📋 Datos del Crédito</h2>
+                
+                <div class="info-rates">
+                    <h4>📊 Tasas Vigentes:</h4>
+                    <ul>
+                        <li>• Tasa anual: 16% (1.33% mensual)</li>
+                        <li>• Interés trimestral: 3%</li>
+                        <li>• Comisión flat: 0.5%</li>
+                        <li>• Interés de mora: 0.8%</li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="creditType">Tipo de Crédito:</label>
+                    <select id="creditType">
+                        <option value="microcredito">Microcrédito</option>
+                        <option value="comercial">Comercial</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Monto del Crédito (USD):</label>
+                    <input type="number" id="amount" placeholder="Ej: 1000" min="1" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="months">Plazo (meses):</label>
+                    <input type="number" id="months" value="6" min="1" max="36">
+                </div>
+
+                <div class="warning-box">
+                    <h4>💱 Conversión a Bolívares</h4>
+                    <p>Ingrese la tasa de cambio del día según el Banco Central de Venezuela</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="exchangeRate">Tasa de Cambio (Bs por USD):</label>
+                    <input type="number" id="exchangeRate" placeholder="Ej: 36.50" min="0.01" step="0.01">
+                </div>
+
+                <button class="btn-calculate" onclick="calculateCredit()">
+                    🧮 Calcular Crédito
+                </button>
+            </div>
+
+            <div class="results-section">
+                <h2>📈 Resultados del Cálculo</h2>
+                
+                <div class="currency-toggle">
+                    <button class="currency-btn active" id="usdBtn" onclick="toggleCurrency('usd')">USD</button>
+                    <button class="currency-btn" id="bsBtn" onclick="toggleCurrency('bs')">Bolívares</button>
+                </div>
+
+                <div class="summary-cards" id="summaryCards">
+                    <!-- Se llenarán dinámicamente -->
+                </div>
+
+                <div id="amortizationContainer">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCurrency = 'usd';
+        let calculationResults = null;
+
+        function calculateCredit() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const months = parseInt(document.getElementById('months').value);
+            const exchangeRate = parseFloat(document.getElementById('exchangeRate').value);
+            const creditType = document.getElementById('creditType').value;
+
+            if (!amount || !months || !exchangeRate) {
+                alert('Por favor, complete todos los campos');
+                return;
+            }
+
+            // Tasas según el documento
+            const annualRate = 0.16; // 16%
+            const monthlyRate = annualRate / 12; // 1.33% mensual
+            const quarterlyRate = 0.03; // 3% trimestral
+            const flatCommission = 0.005; // 0.5%
+            const defaultRate = 0.008; // 0.8% mora
+
+            // Comisión flat al inicio
+            const flatCommissionAmount = amount * flatCommission;
+            const netAmount = amount - flatCommissionAmount;
+
+            // Cálculo de la cuota mensual (capital + interés)
+            const monthlyPayment = netAmount * (monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+                                  (Math.pow(1 + monthlyRate, months) - 1);
+
+            // Tabla de amortización
+            let balance = netAmount;
+            const amortizationTable = [];
+            let totalInterest = 0;
+            let totalQuarterlyInterest = 0;
+
+            for (let month = 1; month <= months; month++) {
+                const interestPayment = balance * monthlyRate;
+                const principalPayment = monthlyPayment - interestPayment;
+                
+                // Interés trimestral (meses 3, 6, 9, etc.)
+                let quarterlyInterest = 0;
+                if (month % 3 === 0) {
+                    quarterlyInterest = netAmount * quarterlyRate;
+                    totalQuarterlyInterest += quarterlyInterest;
+                }
+
+                const totalMonthlyPayment = monthlyPayment + quarterlyInterest;
+                balance -= principalPayment;
+
+                amortizationTable.push({
+                    month: month,
+                    balance: Math.max(0, balance),
+                    principalPayment: principalPayment,
+                    interestPayment: interestPayment,
+                    quarterlyInterest: quarterlyInterest,
+                    totalPayment: totalMonthlyPayment
+                });
+
+                totalInterest += interestPayment;
+            }
+
+            const totalAmount = netAmount + totalInterest + totalQuarterlyInterest;
+
+            calculationResults = {
+                originalAmount: amount,
+                netAmount: netAmount,
+                flatCommissionAmount: flatCommissionAmount,
+                monthlyPayment: monthlyPayment,
+                totalInterest: totalInterest,
+                totalQuarterlyInterest: totalQuarterlyInterest,
+                totalAmount: totalAmount,
+                amortizationTable: amortizationTable,
+                exchangeRate: exchangeRate,
+                creditType: creditType
+            };
+
+            displayResults();
+        }
+
+        function displayResults() {
+            if (!calculationResults) return;
+
+            const isUSD = currentCurrency === 'usd';
+            const rate = isUSD ? 1 : calculationResults.exchangeRate;
+            const symbol = isUSD ? '$' : 'Bs. ';
+
+            const summaryCards = document.getElementById('summaryCards');
+            summaryCards.innerHTML = `
+                <div class="summary-card">
+                    <h3>Monto Solicitado</h3>
+                    <div class="amount">${symbol}${(calculationResults.originalAmount * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Comisión Flat (0.5%)</h3>
+                    <div class="amount">${symbol}${(calculationResults.flatCommissionAmount * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Monto Neto</h3>
+                    <div class="amount">${symbol}${(calculationResults.netAmount * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Cuota Mensual Base</h3>
+                    <div class="amount">${symbol}${(calculationResults.monthlyPayment * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Intereses</h3>
+                    <div class="amount">${symbol}${(calculationResults.totalInterest * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Total a Pagar</h3>
+                    <div class="amount">${symbol}${(calculationResults.totalAmount * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</div>
+                </div>
+            `;
+
+            const amortizationContainer = document.getElementById('amortizationContainer');
+            let tableHTML = `
+                <h3 style="color: #1e3a8a; margin-bottom: 15px;">📋 Tabla de Amortización</h3>
+                <table class="amortization-table">
+                    <thead>
+                        <tr>
+                            <th>Mes</th>
+                            <th>Saldo</th>
+                            <th>Capital</th>
+                            <th>Interés Mensual</th>
+                            <th>Interés Trimestral</th>
+                            <th>Cuota Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            calculationResults.amortizationTable.forEach(row => {
+                tableHTML += `
+                    <tr>
+                        <td>${row.month}</td>
+                        <td>${symbol}${(row.balance * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</td>
+                        <td>${symbol}${(row.principalPayment * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</td>
+                        <td>${symbol}${(row.interestPayment * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</td>
+                        <td>${symbol}${(row.quarterlyInterest * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</td>
+                        <td><strong>${symbol}${(row.totalPayment * rate).toLocaleString('es-ES', {minimumFractionDigits: 2})}</strong></td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            amortizationContainer.innerHTML = tableHTML;
+        }
+
+        function toggleCurrency(currency) {
+            currentCurrency = currency;
+            
+            // Actualizar botones activos
+            document.getElementById('usdBtn').classList.toggle('active', currency === 'usd');
+            document.getElementById('bsBtn').classList.toggle('active', currency === 'bs');
+            
+            // Actualizar resultados si existen
+            if (calculationResults) {
+                displayResults();
+            }
+        }
+
+        // Validación en tiempo real
+        document.getElementById('amount').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+        });
+
+        document.getElementById('exchangeRate').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+        });
+
+        // Enter para calcular
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateCredit();
+            }
+        });
+    </script>
+</body>
+</html>
